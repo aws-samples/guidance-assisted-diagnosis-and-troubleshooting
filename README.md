@@ -26,3 +26,8 @@ Key features of the guidance include:
 
 [Assisted Diagnosis and Troubleshooting on AWS with Amazon Q](/amazonQ/README.md)
 
+## Authors
+
+- Marin Mestrovic
+- Gabriel Verreault
+
