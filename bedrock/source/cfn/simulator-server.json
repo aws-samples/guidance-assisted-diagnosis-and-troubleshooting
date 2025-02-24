@@ -1,0 +1,467 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Brewery Simulator Quick Deploy Template. Deploys simulation script to an EC2 instance and installs a CF template for IoT SiteWise (SO9315)",
+    "Parameters": {
+        "InstanceType": {
+            "Type": "String",
+            "Description": "",
+            "Default": "t2.micro",
+            "AllowedValues": [
+                "t2.micro",
+                "t2.medium",
+                "t3.micro",
+                "t3.medium"
+            ],
+            "ConstraintDescription": "must be a valid EC2 instance type."
+        }
+    },
+    "Mappings": {
+        "AWSRegion2AMI": {
+            "us-east-1": {
+                "ami": "ami-0166fe664262f664c"
+            },
+            "us-west-2": {
+                "ami": "ami-06e85d4c3149db26a"
+            },
+            "us-east-2": {
+                "ami": "ami-05bfbece1ed5beb54"
+            },
+            "ap-south-1": {
+                "ami": "ami-01a4f99c4ac11b03c"
+            },
+            "ap-northeast-2": {
+                "ami": "ami-013218fccb68a90d4"
+            },
+            "ap-southeast-1": {
+                "ami": "ami-0753e0e42b20e96e3"
+            },
+            "ap-southeast-2": {
+                "ami": "ami-023dd49682f8a7c2b"
+            },
+            "ap-northeast-1": {
+                "ami": "ami-06ee4e2261a4dc5c3"
+            },
+            "ca-central-1": {
+                "ami": "ami-092e716d46cd65cac"
+            },
+            "eu-central-1": {
+                "ami": "ami-06c39ed6b42908a36"
+            },
+            "eu-west-1": {
+                "ami": "ami-0b752bf1df193a6c4"
+            },
+            "us-gov-west-1": {
+                "ami": "ami-08528bba60fc5bc86"
+            }
+        }
+    },
+    "Resources": {
+        "SimulatorVPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/16",
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true
+            }
+        },
+        "PublicSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "SimulatorVPC"
+                },
+                "CidrBlock": "10.0.1.0/24",
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "PrivateSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "SimulatorVPC"
+                },
+                "CidrBlock": "10.0.2.0/24",
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "MapPublicIpOnLaunch": false
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {}
+        },
+        "AttachInternetGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "SimulatorVPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "PublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "SimulatorVPC"
+                }
+            }
+        },
+        "PublicRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "AttachInternetGateway",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "PublicSubnetRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "PublicSubnet"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable"
+                }
+            }
+        },
+        "PrivateRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "SimulatorVPC"
+                }
+            }
+        },
+        "NATGatewayEIP": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc"
+            }
+        },
+        "NATGateway": {
+            "Type": "AWS::EC2::NatGateway",
+            "DependsOn": "AttachInternetGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "NATGatewayEIP",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet"
+                }
+            }
+        },
+        "PrivateRoute": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PrivateRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "NATGateway"
+                }
+            }
+        },
+        "PrivateSubnetRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "PrivateSubnet"
+                },
+                "RouteTableId": {
+                    "Ref": "PrivateRouteTable"
+                }
+            }
+        },
+        "SimulatorInstance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegion2AMI",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "ami"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Brewery Simulator"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "PrivateSubnet"
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "SimulatorIAMInstanceProfile"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "SimulatorSecurityGroup"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -x\n# Install simulator and packages\n# yum update -y\nyum install -y aws-cfn-bootstrap\n",
+                                "/opt/aws/bin/cfn-init -v",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource SimulatorInstance ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "yum -y groupinstall \"Development Tools\"\nyum erase openssl-devel -y\nyum install openssl11 openssl11-devel  libffi-devel bzip2-devel wget -y\nwget https://www.python.org/ftp/python/3.10.2/Python-3.10.2.tgz\ntar zxvf Python-3.10.2.tgz\ncd Python-3.10.2/\n./configure\nnproc\nmake -j $(nproc)\nmake altinstall\nyum install -y python-opcua python-opcua-tools jq\npip3.10 install opcua boto3 cryptography lxml pytz --no-input\ngit clone https://github.com/aws-solutions-library-samples/breweries-sitewise-simulator.git /brewery\n",
+                                "",
+                                "echo \"@reboot /usr/local/bin/python3.10 /brewery/Breweries/awsBrewSimServer.py --publishtositewise=True --interval=5 --region=",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\" > my-crontab",
+                                "\n",
+                                "systemctl enable cron.service\ncrontab my-crontab\n",
+                                "",
+                                "# Signal the status from cfn-init\n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource SimulatorInstance ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "/usr/local/bin/python3.10 /brewery/Breweries/awsBrewSimServer.py --publishtositewise=True --interval=5 --region=",
+                                {
+                                    "Ref": "AWS::Region"
+                                }
+                            ]
+                        ]
+                    }
+                }
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT15M"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7755ae8b-0af6-4687-ad9f-e0335896a0f6"
+                }
+            }
+        },
+        "SimulatorSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "SimulatorVPC"
+                },
+                "GroupDescription": "ACME Brewery SG",
+                "SecurityGroupIngress": [],
+                "SecurityGroupEgress": [{
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "CidrIp": "0.0.0.0/0",
+                    "Description": "Allow outbound HTTPS traffic to anywhere"
+                }]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "9545159e-eb2b-4189-aa07-67112dd8e1d4"
+                }
+            }
+        },
+        "SimulatorIAMRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    { "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore" }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "91d81a05-40a4-40aa-9e6f-3752ed962081"
+                }
+            }
+        },
+        "SimulatorIAMInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "SimulatorIAMRole"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "10c56ae2-36a2-4da8-8263-b27934d9c145"
+                }
+            }
+        },
+        "SimulatorIAMPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "SimulatorSiteWisePolicy",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "iotsitewise:BatchPutAssetPropertyValue"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "SimulatorIAMRole"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "a2d16b4a-37f8-461e-a945-60d45eb5f0d8"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "DemoInstanceId": {
+            "Description": "Instance Id",
+            "Value": {
+                "Ref": "SimulatorInstance"
+            }
+        }
+    },
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "9545159e-eb2b-4189-aa07-67112dd8e1d4": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 90,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "7755ae8b-0af6-4687-ad9f-e0335896a0f6": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "9545159e-eb2b-4189-aa07-67112dd8e1d4"
+                ]
+            },
+            "91d81a05-40a4-40aa-9e6f-3752ed962081": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 270,
+                    "y": 150
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "10c56ae2-36a2-4da8-8263-b27934d9c145": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 270,
+                    "y": 30
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "a2d16b4a-37f8-461e-a945-60d45eb5f0d8": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 390,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "91d81a05-40a4-40aa-9e6f-3752ed962081"
+                ]
+            }
+        }
+    }
+}

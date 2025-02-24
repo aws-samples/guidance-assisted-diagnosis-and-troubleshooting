@@ -1,0 +1,204 @@
+openapi: 3.0.1
+info:
+  title: SiteWiseQuery
+  description: API for querying AWS IoT SiteWise data, providing access to assets, asset overviews, and property values.
+  version: 1.5.3
+
+servers:
+  - url: # REPLACE ME WITH THE OUTPUT FROM CloudFormation - example https://abcdef123.execute-api.us-west-2.amazonaws.com/prod 
+    description: Production API Gateway endpoint
+
+paths:
+  /assets:
+    get:
+      operationId: listAllAssets
+      summary: List all assets
+      description: Retrieves a list of all assets across all models in the IoT SiteWise system. Use this to get an overview of available assets.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:    
+              schema:
+                type: object
+                properties:
+                  assets:
+                    type: array
+                    maxItems: 100
+                    items:
+                      type: object
+                      properties:
+                        assetName:
+                          type: string
+                        assetId:
+                          type: string
+                        modelName:
+                          type: string
+              example:
+                assets:
+                  - assetName: "MaltMill100"
+                    assetId: "6f0bd267-b227-4ebb-a50c-75397cbb51f9"
+                    modelName: "MaltMill"
+                  - assetName: "BottleLine401"
+                    assetId: "7ca9e918-63f2-4e89-823e-df6d6159c20e"
+                    modelName: "BottleLine"
+
+  /asset:
+    get:
+      operationId: getAssetPropertyValues
+      summary: Get  overview and current values of properties for an asset
+      description: Retrieves a comprehensive overview of a specific asset, including its current property values. Use this function to answer questions about the current values of any properties of an asset and to list all properties of that asset. For example, if someone asks about the temperature, OEE, pressure, etc. (what would be a property), use this and to get the current value. If you need the asset_id before the call, you can first call  listAllAssets
+      parameters:
+        - name: asset_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset
+          example: "6670c18f-be54-42c6-b642-5d6649fbb0da"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  assetName:
+                    type: string
+                  assetId:
+                    type: string
+                  status:
+                    type: string
+                  properties:
+                    type: array
+                    maxItems: 100
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        id:
+                          type: string
+                        dataType:
+                          type: string
+                        currentValue:
+                          type: string
+              example:
+                assetName: "Roaster100"
+                assetId: "6670c18f-be54-42c6-b642-5d6649fbb0da"
+                status: "ACTIVE"
+                properties:
+                  - name: "Temperature"
+                    id: "0dbf2ca6-68bb-4ac6-9991-d74595f60bad"
+                    dataType: "DOUBLE"
+                    currentValue: "99.89"
+                  - name: "State"
+                    id: "246f55aa-c67f-45ca-a9bd-02a2fa5ca478"
+                    dataType: "STRING"
+                    currentValue: "Running"
+
+  /property:
+    get:
+      operationId: getHistoricalPropertyValue
+      summary: Get historical or aggregated property values
+      description: Retrieves the value of a specific property for an asset. Can return historical, or aggregated data based on the 'type' parameter. Use this to answer question about property value in the last hour, averages, maximum and minimum. 
+      parameters:
+        - name: asset_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset
+          example: "6670c18f-be54-42c6-b642-5d6649fbb0da"
+        - name: property_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the property
+          example: "0dbf2ca6-68bb-4ac6-9991-d74595f60bad"
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [historical, aggregated]
+          description: The type of data to retrieve (historical, or aggregated)
+          example: "historical"
+        - name: start_time
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The start time for historical or aggregated data. Use relative time like -1h (an hour ago), -1d (a day ago)
+          example: "-1h"
+        - name: end_time
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The end time for historical or aggregated data. Uses relative time, 'now' (current), '-1h' for an hour ago
+          example: "now"
+        - name: resolution
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The time resolution for aggregated data (e.g., '1h' for hourly)
+          example: "1h"
+        - name: aggregate_types
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Comma-separated list of aggregate types (e.g., 'AVERAGE,MINIMUM,MAXIMUM')
+          example: "AVERAGE,MINIMUM,MAXIMUM"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  asset:
+                    type: string
+                  property:
+                    type: string
+                  dataType:
+                    type: string
+                  value:
+                    type: object
+                    description: The structure depends on the 'type' parameter (historical, or aggregated)
+              examples:
+                historical:
+                  summary: Historical values
+                  value:
+                    asset: "Roaster100"
+                    property: "Temperature"
+                    dataType: "DOUBLE"
+                    startTime: "2024-09-19T19:16:08.024039+00:00"
+                    endTime: "2024-09-19T20:16:08.024043+00:00"
+                    historicalData:
+                      - value: 99.84
+                        timestamp: "2024-09-19T19:16:32+00:00"
+                        quality: "GOOD"
+                      - value: 102.99
+                        timestamp: "2024-09-19T19:19:22+00:00"
+                        quality: "GOOD"
+                aggregated:
+                  summary: Aggregated values
+                  value:
+                    asset: "Roaster100"
+                    property: "Temperature"
+                    dataType: "DOUBLE"
+                    startTime: "2024-09-18T20:17:11.280303+00:00"
+                    endTime: "2024-09-19T20:17:11.280306+00:00"
+                    resolution: "1h"
+                    aggregatedData:
+                      - timestamp: "2024-09-19T19:00:00+00:00"
+                        values:
+                          AVERAGE: 280.84
+                          MINIMUM: 99.73
+                          MAXIMUM: 489.28

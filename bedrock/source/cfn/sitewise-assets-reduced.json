@@ -1,0 +1,3128 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Brewery SiteWise Assets (SO9315)",
+    "Resources": {        
+        "BoilKettleResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "BoilKettle",
+                "AssetModelProperties": [
+                    {
+                        "Name": "BrewedWort",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BrewedWortPV777da0b1"
+                    },
+                    {
+                        "Name": "Demand",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Demand\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState6c79394e"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Demand58881c5a"
+                    },
+                    {
+                        "Name": "Downtime",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Downtime\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState6c79394e"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Downtimea50ac419"
+                    },
+                    {
+                        "Name": "HoldTime",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimePT5b57eaec"
+                    },
+                    {
+                        "Name": "Hops",
+                        "DataType": "DOUBLE",
+                        "Unit": "grams",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HopsSP6df75463"
+                    },
+                    {
+                        "Name": "InletValve",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValvePVe92e9980"
+                    },
+                    {
+                        "Name": "Level",
+                        "DataType": "DOUBLE",
+                        "Unit": "%",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "LevelPVc0dbcdc0"
+                    },
+                    {
+                        "Name": "Maintenance",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Maintenance\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState6c79394e"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Maintenance6d3c0ba8"
+                    },
+                    {
+                        "Name": "OEE",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "var_utilizationper5min*var_qualityper5min*var_performanceper5min/10000",
+                                "Variables": [
+                                    {
+                                        "Name": "var_qualityper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "QualityPer5minef070534"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_utilizationper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationPer5mindcc39652"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_performanceper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "PerformancePer5minbdabba40"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "OEEPer5min4ca78cee"
+                    },
+                    {
+                        "Name": "OutletValve",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValvePV90d31612"
+                    },
+                    {
+                        "Name": "Performance",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "avg(var_utilizationper5min)",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationPer5mindcc39652"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "PerformancePer5minbdabba40"
+                    },
+                    {
+                        "Name": "Quality",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "sum(var_brewedwort_pv)/(sum(var_brewedwort_pv)+sum(var_scrap))*100",
+                                "Variables": [
+                                    {
+                                        "Name": "var_brewedwort_pv",
+                                        "Value": {
+                                            "PropertyLogicalId": "BrewedWortPV777da0b1"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_scrap",
+                                        "Value": {
+                                            "PropertyLogicalId": "Scrap46e5c4d5"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "QualityPer5minef070534"
+                    },
+                    {
+                        "Name": "Runtime",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Runtime\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState6c79394e"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Runtime27a54c20"
+                    },
+                    {
+                        "Name": "Scrap",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Scrap46e5c4d5"
+                    },
+                    {
+                        "Name": "Status",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Statusbf313782"
+                    },
+                    {
+                        "Name": "SteamValve",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SteamValvePVe6cb4ef4"
+                    },
+                    {
+                        "Name": "TargetOEE",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {
+                                "DefaultValue": "75"
+                            }
+                        },
+                        "LogicalId": "TargetOEE3bc7aec8"
+                    },
+                    {
+                        "Name": "Temperature",
+                        "DataType": "INTEGER",
+                        "Unit": "Celsius",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperatureSP96e35f22"
+                    },
+                    {
+                        "Name": "Utilization",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "statetime(var_runtime)/(statetime(var_runtime)+statetime(var_demand)+statetime(var_downtime)+statetime(var_maintenance))*100",
+                                "Variables": [
+                                    {
+                                        "Name": "var_runtime",
+                                        "Value": {
+                                            "PropertyLogicalId": "Runtime27a54c20"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_downtime",
+                                        "Value": {
+                                            "PropertyLogicalId": "Downtimea50ac419"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_demand",
+                                        "Value": {
+                                            "PropertyLogicalId": "Demand58881c5a"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_maintenance",
+                                        "Value": {
+                                            "PropertyLogicalId": "Maintenance6d3c0ba8"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "UtilizationPer5mindcc39652"
+                    },
+                    {
+                        "Name": "UtilizationState",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "UtilizationState6c79394e"
+                    },
+                    {
+                        "Name": "Wort",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "WortPV06ec146e"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },
+        "BrightTankResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "BrightTank",
+                "AssetModelProperties": [
+                    {
+                        "Name": "AllocatedFrom",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "AllocatedFrome6ffef86"
+                    },
+                    {
+                        "Name": "BeerShipped",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BeerShipped40cf555d"
+                    },
+                    {
+                        "Name": "Beer_PV",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BeerPV39bde56d"
+                    },
+                    {
+                        "Name": "Beer_SP",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BeerSP34f9aaab"
+                    },
+                    {
+                        "Name": "ChillWaterValve_CLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ChillWaterValveCLS61254ccf"
+                    },
+                    {
+                        "Name": "ChillWaterValve_OLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ChillWaterValveOLS6fdb287d"
+                    },
+                    {
+                        "Name": "ChillWaterValve_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ChillWaterValvePV7b4d5803"
+                    },
+                    {
+                        "Name": "Cons_GreenBeer_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsGreenBeerFromLote981a81c"
+                    },
+                    {
+                        "Name": "Cons_GreenBeer_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsGreenBeerItem0f8e73e7"
+                    },
+                    {
+                        "Name": "HoldTime_ET",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimeETb71605bf"
+                    },
+                    {
+                        "Name": "HoldTime_PT",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimePT30f557c8"
+                    },
+                    {
+                        "Name": "InletValve_CLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValveCLS429ec8be"
+                    },
+                    {
+                        "Name": "InletValve_OLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValveOLS3ee170bb"
+                    },
+                    {
+                        "Name": "InletValve_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValvePV9b8b7832"
+                    },
+                    {
+                        "Name": "Level_PV",
+                        "DataType": "DOUBLE",
+                        "Unit": "%",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "LevelPVa5e05868"
+                    },
+                    {
+                        "Name": "MaterialID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaterialID2ce93a31"
+                    },
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Namedf45d7b2"
+                    },
+                    {
+                        "Name": "OutletPump_AuxContact",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletPumpAuxContact6b8655e1"
+                    },
+                    {
+                        "Name": "OutletPump_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletPumpPV23c9bb14"
+                    },
+                    {
+                        "Name": "OutletValve_CLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValveCLS9a10e2b6"
+                    },
+                    {
+                        "Name": "OutletValve_OLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValveOLS1c0c746c"
+                    },
+                    {
+                        "Name": "OutletValve_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValvePV9a83418b"
+                    },
+                    {
+                        "Name": "Prod_Beer_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProdBeerItem23a051ad"
+                    },
+                    {
+                        "Name": "Prod_Beer_ToLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProdBeerToLot628e4344"
+                    },
+                    {
+                        "Name": "ProductionID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProductionIDf91d0f1b"
+                    },
+                    {
+                        "Name": "ShipTo_Tank",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ShipToTankcce36f75"
+                    },
+                    {
+                        "Name": "State",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "State66410e15"
+                    },
+                    {
+                        "Name": "Status",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Statusfc0a0f72"
+                    },
+                    {
+                        "Name": "Temperature_PV",
+                        "DataType": "DOUBLE",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperaturePV67c6ca78"
+                    },
+                    {
+                        "Name": "Temperature_SP",
+                        "DataType": "INTEGER",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperatureSP69d576bb"
+                    },
+                    {
+                        "Name": "Utilization",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Utilization4a30f194"
+                    },
+                    {
+                        "Name": "UtilizationState",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "UtilizationState428d114e"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },
+        "MashTunResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "MashTun",
+                "AssetModelProperties": [
+                    {
+                        "Name": "Agitator",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "AgitatorPVd659271f"
+                    },
+                    {
+                        "Name": "Demand",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Demand\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationStatee8cedd4b"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Demandaf2a6d54"
+                    },
+                    {
+                        "Name": "Downtime",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Downtime\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationStatee8cedd4b"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Downtime7fe19766"
+                    },
+                    {
+                        "Name": "HoldTime",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimePTdbcf78f9"
+                    },
+                    {
+                        "Name": "Maintenance",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Maintenance\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationStatee8cedd4b"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Maintenance01726b33"
+                    },
+                    {
+                        "Name": "MaterialID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaterialID2130f4b7"
+                    },
+                    {
+                        "Name": "OEEPer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "var_utilizationper5min*var_performanceper5min*var_qualityper5min/10000",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationPer5min2469e954"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_qualityper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "QualityPer5min4e9fd782"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_performanceper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "PerformancePer5min9b04a355"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "OEEPer5min896bf20a"
+                    },
+                    {
+                        "Name": "OutletPump",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletPumpPV7b60f742"
+                    },
+                    {
+                        "Name": "OutletValve",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValvePVe1586b29"
+                    },
+                    {
+                        "Name": "PerformancePer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "avg(var_utilizationper5min)",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationPer5min2469e954"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "PerformancePer5min9b04a355"
+                    },
+                    {
+                        "Name": "Prod_Wort_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProdWortItemef11d237"
+                    },
+                    {
+                        "Name": "Prod_Wort_ToLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProdWortToLotc6ec306b"
+                    },
+                    {
+                        "Name": "QualityPer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "sum(var_wort_pv)/(sum(var_wort_pv)+sum(var_scrap))*100",
+                                "Variables": [
+                                    {
+                                        "Name": "var_wort_pv",
+                                        "Value": {
+                                            "PropertyLogicalId": "WortPV1e3224fe"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_scrap",
+                                        "Value": {
+                                            "PropertyLogicalId": "Scrapd7f97a53"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "QualityPer5min4e9fd782"
+                    },
+                    {
+                        "Name": "Runtime",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Runtime\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationStatee8cedd4b"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Runtime289dfc8b"
+                    },
+                    {
+                        "Name": "Scrap",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Scrapd7f97a53"
+                    },
+                    {
+                        "Name": "Scrap_ToLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ScrapToLot148d2cf4"
+                    },
+                    {
+                        "Name": "ShipComplete",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ShipComplete750d8d32"
+                    },
+                    {
+                        "Name": "SoakTemperature1",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SoakTempSP10b2059dd"
+                    },
+                    {
+                        "Name": "SoakTemperature2",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SoakTempSP2dbf8835b"
+                    },
+                    {
+                        "Name": "SoakTime1",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SoakTimeSP1bd374093"
+                    },
+                    {
+                        "Name": "SoakTime2",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SoakTimeSP292786d0c"
+                    },
+                    {
+                        "Name": "Status",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Statusb7d47b8a"
+                    },
+                    {
+                        "Name": "SteamValve",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SteamValvePV113e5ad5"
+                    },
+                    {
+                        "Name": "Temperature",
+                        "DataType": "DOUBLE",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperaturePV634771e7"
+                    },
+                    {
+                        "Name": "Utilization",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Utilization4d94e5e9"
+                    },
+                    {
+                        "Name": "UtilizationPer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "statetime(var_runtime)/(statetime(var_runtime)+statetime(var_demand)+statetime(var_maintenance)+statetime(var_downtime))*100",
+                                "Variables": [
+                                    {
+                                        "Name": "var_runtime",
+                                        "Value": {
+                                            "PropertyLogicalId": "Runtime289dfc8b"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_demand",
+                                        "Value": {
+                                            "PropertyLogicalId": "Demandaf2a6d54"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_downtime",
+                                        "Value": {
+                                            "PropertyLogicalId": "Downtime7fe19766"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_maintenance",
+                                        "Value": {
+                                            "PropertyLogicalId": "Maintenance01726b33"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "UtilizationPer5min2469e954"
+                    },
+                    {
+                        "Name": "UtilizationState",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "UtilizationStatee8cedd4b"
+                    },
+                    {
+                        "Name": "WaterValve",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "WaterValvePVdc3bced6"
+                    },
+                    {
+                        "Name": "Water",
+                        "DataType": "DOUBLE",
+                        "Unit": "Gals",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "WaterPV77fdf4ac"
+                    },
+                    {
+                        "Name": "Wort",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "WortPV1e3224fe"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },
+        "MaltMillResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "MaltMill",
+                "AssetModelProperties": [
+                    {
+                        "Name": "MaltMill",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaltMillPVd3b70fe3"
+                    },
+                    {
+                        "Name": "Malt",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaltPVdc06a825"
+                    },
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Name960da898"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },
+        "AreaResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "Area",
+                "AssetModelDescription": "Areas are physical, geographic, or logical groupings determined by the site. It may include process units, production units, and production lines. Most 3-level functions occur in this area. The main production capacity and geographic location within a location usually determine the area.",
+                "AssetModelProperties": [
+                    {
+                        "Name": "Name",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Namef722ac22"
+                    }
+                ],
+                "AssetModelHierarchies": [
+                    {
+                        "Name": "BoilKettle",
+                        "ChildAssetModelId": {
+                            "Ref": "BoilKettleResource"
+                        },
+                        "LogicalId": "BoilKettle"
+                    },
+                    {
+                        "Name": "BottleLine",
+                        "ChildAssetModelId": {
+                            "Ref": "BottleLineResource"
+                        },
+                        "LogicalId": "BottleLine"
+                    },
+                    {
+                        "Name": "BrightTank",
+                        "ChildAssetModelId": {
+                            "Ref": "BrightTankResource"
+                        },
+                        "LogicalId": "BrightTank"
+                    },
+                    {
+                        "Name": "Fermenter",
+                        "ChildAssetModelId": {
+                            "Ref": "FermenterResource"
+                        },
+                        "LogicalId": "Fermenter"
+                    },
+                    {
+                        "Name": "MaltMill",
+                        "ChildAssetModelId": {
+                            "Ref": "MaltMillResource"
+                        },
+                        "LogicalId": "MaltMill"
+                    },
+                    {
+                        "Name": "MashTun",
+                        "ChildAssetModelId": {
+                            "Ref": "MashTunResource"
+                        },
+                        "LogicalId": "MashTun"
+                    },
+                    {
+                        "Name": "Roaster",
+                        "ChildAssetModelId": {
+                            "Ref": "RoasterResource"
+                        },
+                        "LogicalId": "Roaster"
+                    }
+                ]
+            }
+        },
+        "BottleLineResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "BottleLine",
+                "AssetModelProperties": [
+                    {
+                        "Name": "AllocatedFrom",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "AllocatedFromdb21235b"
+                    },
+                    {
+                        "Name": "Beer_PV",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BeerPV6ac101b1"
+                    },
+                    {
+                        "Name": "Bottle_PV",
+                        "DataType": "INTEGER",
+                        "Unit": "Bottles Filled",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BottlePV07ecb20a"
+                    },
+                    {
+                        "Name": "Bottle_SP",
+                        "DataType": "INTEGER",
+                        "Unit": "Bottles Filled",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "BottleSPf19ef29a"
+                    },
+                    {
+                        "Name": "Cons_Beer_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsBeerFromLot83896741"
+                    },
+                    {
+                        "Name": "Cons_Beer_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsBeerItemef1ab1d6"
+                    },
+                    {
+                        "Name": "Cons_Bottle_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsBottleFromLot70393837"
+                    },
+                    {
+                        "Name": "Cons_Bottle_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsBottleItemc77883de"
+                    },
+                    {
+                        "Name": "Cons_Cap_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsCapFromLotd3d47cce"
+                    },
+                    {
+                        "Name": "Cons_Label_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsLabelFromLot82f9cfd6"
+                    },
+                    {
+                        "Name": "Cons_Label_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsLabelItema3f95d48"
+                    },
+                    {
+                        "Name": "HoldTime_ET",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimeETe3699475"
+                    },
+                    {
+                        "Name": "HoldTime_PT",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimePTf682d42d"
+                    },
+                    {
+                        "Name": "Level_PV",
+                        "DataType": "DOUBLE",
+                        "Unit": "%",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "LevelPVa2328368"
+                    },
+                    {
+                        "Name": "MaterialID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaterialID518fb40a"
+                    },
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Name5a32c7e2"
+                    },
+                    {
+                        "Name": "Prod_BottledBeer_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProdBottledBeerIteme2c26434"
+                    },
+                    {
+                        "Name": "Prod_BottledBeer_ToLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProdBottledBeerToLotd76e1f0b"
+                    },
+                    {
+                        "Name": "ProductionID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProductionIDcbb517b5"
+                    },
+                    {
+                        "Name": "Scrap",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Scrapbdaccb48"
+                    },
+                    {
+                        "Name": "Speed_PV",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SpeedPVc78649e2"
+                    },
+                    {
+                        "Name": "Speed_SP",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "SpeedSP1e7a1e88"
+                    },
+                    {
+                        "Name": "State",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Statefa32999e"
+                    },
+                    {
+                        "Name": "Status",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Status4d6fe9b0"
+                    },
+                    {
+                        "Name": "Temperature_PV",
+                        "DataType": "DOUBLE",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperaturePV70875016"
+                    },
+                    {
+                        "Name": "Temperature_SP",
+                        "DataType": "INTEGER",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperatureSPe4aa0ba6"
+                    },
+                    {
+                        "Name": "Utilization",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Utilizatione7a10842"
+                    },
+                    {
+                        "Name": "UtilizationState",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "UtilizationState9151f7ec"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },
+        "BottlingAreaResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "BottlingArea",
+                "AssetModelProperties": [],
+                "AssetModelHierarchies": [
+                    {
+                        "Name": "BottleLines",
+                        "ChildAssetModelId": {
+                            "Ref": "BottleLineResource"
+                        },
+                        "LogicalId": "BottleLines"
+                    }
+                ]
+            }
+        },
+        "RoasterResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "Roaster",
+                "AssetModelProperties": [
+                    {
+                        "Name": "Demand",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Demand\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState77df5627"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Demandc7e2f953"
+                    },
+                    {
+                        "Name": "Downtime",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Downtime\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState77df5627"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Downtime8f2e925d"
+                    },
+                    {
+                        "Name": "HoldTime",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimePT63053612"
+                    },
+                    {
+                        "Name": "Maintenance",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Maintenance\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState77df5627"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Maintenance3625abf2"
+                    },
+                    {
+                        "Name": "Malt",
+                        "DataType": "DOUBLE",
+                        "Unit": "lbs",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaltPVf6d57f2b"
+                    },
+                    {
+                        "Name": "MaterialID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaterialID45da914f"
+                    },
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Name0c78cdb9"
+                    },
+                    {
+                        "Name": "OEEPer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "var_utilizationper5min*var_qualityper5min*var_performanceper5min/10000",
+                                "Variables": [
+                                    {
+                                        "Name": "var_performanceper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "PerformancePer5minee738a82"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_utilizationper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationPer5min940a7299"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_qualityper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "QualityPer5minc84f18e5"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "OEEPer5min10caf924"
+                    },
+                    {
+                        "Name": "PerformancePer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "avg(var_utilizationper5min)",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationper5min",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationPer5min940a7299"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "PerformancePer5minee738a82"
+                    },
+                    {
+                        "Name": "ProductionID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProductionID7b6a91f1"
+                    },
+                    {
+                        "Name": "QualityPer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "sum(var_malt_pv)/(sum(var_malt_pv)+sum(var_scrap))*100",
+                                "Variables": [
+                                    {
+                                        "Name": "var_malt_pv",
+                                        "Value": {
+                                            "PropertyLogicalId": "MaltPVf6d57f2b"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_scrap",
+                                        "Value": {
+                                            "PropertyLogicalId": "Scrap29877a9b"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "QualityPer5minc84f18e5"
+                    },
+                    {
+                        "Name": "Runtime",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Transform",
+                            "Transform": {
+                                "Expression": "contains(var_utilizationstate,\"Runtime\")",
+                                "Variables": [
+                                    {
+                                        "Name": "var_utilizationstate",
+                                        "Value": {
+                                            "PropertyLogicalId": "UtilizationState77df5627"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "LogicalId": "Runtime8fd495f3"
+                    },
+                    {
+                        "Name": "Scrap",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Scrap29877a9b"
+                    },
+                    {
+                        "Name": "State",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "State6bebae45"
+                    },
+                    {
+                        "Name": "Temperature",
+                        "DataType": "DOUBLE",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperaturePV1ac0fb06"
+                    },
+                    {
+                        "Name": "UtilizationPer5min",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Metric",
+                            "Metric": {
+                                "Expression": "statetime(var_runtime)/(statetime(var_runtime)+statetime(var_demand)+statetime(var_downtime)+statetime(var_maintenance))*100",
+                                "Variables": [
+                                    {
+                                        "Name": "var_demand",
+                                        "Value": {
+                                            "PropertyLogicalId": "Demandc7e2f953"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_downtime",
+                                        "Value": {
+                                            "PropertyLogicalId": "Downtime8f2e925d"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_maintenance",
+                                        "Value": {
+                                            "PropertyLogicalId": "Maintenance3625abf2"
+                                        }
+                                    },
+                                    {
+                                        "Name": "var_runtime",
+                                        "Value": {
+                                            "PropertyLogicalId": "Runtime8fd495f3"
+                                        }
+                                    }
+                                ],
+                                "Window": {
+                                    "Tumbling": {
+                                        "Interval": "5m"
+                                    }
+                                }
+                            }
+                        },
+                        "LogicalId": "UtilizationPer5min940a7299"
+                    },
+                    {
+                        "Name": "UtilizationState",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "UtilizationState77df5627"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },        
+        "EnterpriseResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "Enterprise",
+                "AssetModelDescription": "An Enterprise is a collection of one or more venues, which may include venues and areas. The company is responsible for determining which products will be produced, where they will be manufactured, and how they will generally be manufactured. Level 4 functions are handled at the enterprise and site level. However, business plans may involve areas, units, lines, or units within an area.",
+                "AssetModelProperties": [
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Name426ab28f"
+                    }
+                ],
+                "AssetModelHierarchies": [
+                    {
+                        "Name": "Site",
+                        "ChildAssetModelId": {
+                            "Ref": "SiteResource"
+                        },
+                        "LogicalId": "Site"
+                    }
+                ]
+            }
+        },
+        "SiteResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "Site",
+                "AssetModelDescription": "A site is a physical, geographic, or logical grouping determined by the company. It may include areas, production lines, process units and production units. The four-level function of the a site involves local location management and optimization. Site planning may involve units, production lines, or units in the area. Geographic location and main production capacity usually identify a location. The location usually has well-defined manufacturing capabilities.",
+                "AssetModelProperties": [
+                    {
+                        "Name": "City",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "City8aa33a4d"
+                    },
+                    {
+                        "Name": "Latitude",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Latitudec8e1af74"
+                    },
+                    {
+                        "Name": "Longitude",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Longitudebab6119a"
+                    },
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Name5cb33aa9"
+                    }
+                ],
+                "AssetModelHierarchies": [
+                    {
+                        "Name": "Area",
+                        "ChildAssetModelId": {
+                            "Ref": "AreaResource"
+                        },
+                        "LogicalId": "Area"
+                    },
+                    {
+                        "Name": "BottlingArea",
+                        "ChildAssetModelId": {
+                            "Ref": "BottlingAreaResource"
+                        },
+                        "LogicalId": "BottlingArea"
+                    }
+                ]
+            }
+        },
+        "FermenterResource": {
+            "Type": "AWS::IoTSiteWise::AssetModel",
+            "Properties": {
+                "AssetModelName": "Fermenter",
+                "AssetModelProperties": [
+                    {
+                        "Name": "ChillWaterValve_CLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ChillWaterValveCLS53213274"
+                    },
+                    {
+                        "Name": "ChillWaterValve_OLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ChillWaterValveOLS0e08b0c4"
+                    },
+                    {
+                        "Name": "ChillWaterValve_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ChillWaterValvePV388a9d4f"
+                    },
+                    {
+                        "Name": "Cons_BrewedWort_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsBrewedWortFromLotcdcd6513"
+                    },
+                    {
+                        "Name": "Cons_BrewedWort_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsBrewedWortItem1283ef8f"
+                    },
+                    {
+                        "Name": "Cons_Yeast_FromLot",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsYeastFromLot5c9f785d"
+                    },
+                    {
+                        "Name": "Cons_Yeast_Item",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ConsYeastItem4c1e4dbd"
+                    },
+                    {
+                        "Name": "GreenBeer_PV",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "GreenBeerPVabb0553d"
+                    },
+                    {
+                        "Name": "HoldTime_ET",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimeET3e914faa"
+                    },
+                    {
+                        "Name": "HoldTime_PT",
+                        "DataType": "INTEGER",
+                        "Unit": "sec",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "HoldTimePT17f7b44d"
+                    },
+                    {
+                        "Name": "InletValve_CLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValveCLSea9b3d15"
+                    },
+                    {
+                        "Name": "InletValve_OLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValveOLSbf42dc31"
+                    },
+                    {
+                        "Name": "InletValve_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "InletValvePV89cc2ec4"
+                    },
+                    {
+                        "Name": "Level_PV",
+                        "DataType": "DOUBLE",
+                        "Unit": "%",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "LevelPVc9c051f9"
+                    },
+                    {
+                        "Name": "MaterialID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "MaterialIDd191bc28"
+                    },
+                    {
+                        "Name": "Name",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Attribute",
+                            "Attribute": {}
+                        },
+                        "LogicalId": "Name80d11a4f"
+                    },
+                    {
+                        "Name": "OutletPump_AuxContact",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletPumpAuxContactdd178f8f"
+                    },
+                    {
+                        "Name": "OutletPump_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletPumpPVaa973dfc"
+                    },
+                    {
+                        "Name": "OutletValve_CLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValveCLScf3d917b"
+                    },
+                    {
+                        "Name": "OutletValve_OLS",
+                        "DataType": "BOOLEAN",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValveOLSe7724552"
+                    },
+                    {
+                        "Name": "OutletValve_PV",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "OutletValvePVe062b5df"
+                    },
+                    {
+                        "Name": "ProductionID",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ProductionID5b189635"
+                    },
+                    {
+                        "Name": "Scrap",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Scrapc0635e82"
+                    },
+                    {
+                        "Name": "ShipTo_Tank",
+                        "DataType": "INTEGER",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "ShipToTank3711787b"
+                    },
+                    {
+                        "Name": "State",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Statef04af0f5"
+                    },
+                    {
+                        "Name": "Status",
+                        "DataType": "STRING",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "Status40ccdcff"
+                    },
+                    {
+                        "Name": "Temperature",
+                        "DataType": "DOUBLE",
+                        "Unit": "Fahrenheit",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "TemperaturePV19d06c8a"
+                    },
+                    {
+                        "Name": "Yeast",
+                        "DataType": "DOUBLE",
+                        "Type": {
+                            "TypeName": "Measurement"
+                        },
+                        "LogicalId": "YeastPVc4fc23d8"
+                    }
+                ],
+                "AssetModelHierarchies": []
+            }
+        },
+        "Breweries": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Breweries",
+                "AssetModelId": {
+                    "Ref": "EnterpriseResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Name426ab28f"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "IrvinePlant"
+                        },
+                        "LogicalId": "Site"
+                    }
+                ]
+            }
+        },
+        "IrvinePlant": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "IrvinePlant",
+                "AssetModelId": {
+                    "Ref": "SiteResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "City8aa33a4d"
+                    },
+                    {
+                        "LogicalId": "Latitudec8e1af74"
+                    },
+                    {
+                        "LogicalId": "Longitudebab6119a"
+                    },
+                    {
+                        "LogicalId": "Name5cb33aa9"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "BeerStorage"
+                        },
+                        "LogicalId": "Area"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Brewing"
+                        },
+                        "LogicalId": "Area"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Fermentation"
+                        },
+                        "LogicalId": "Area"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Mashing"
+                        },
+                        "LogicalId": "Area"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Roasting"
+                        },
+                        "LogicalId": "Area"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Bottling"
+                        },
+                        "LogicalId": "BottlingArea"
+                    }
+                ]
+            }
+        },
+        "BeerStorage": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "BeerStorage",
+                "AssetModelId": {
+                    "Ref": "AreaResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Namef722ac22"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "BrightTank301"
+                        },
+                        "LogicalId": "BrightTank"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "BrightTank302"
+                        },
+                        "LogicalId": "BrightTank"
+                    }
+                ]
+            }
+        },
+        "BrightTank301": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "BrightTank301",
+                "AssetModelId": {
+                    "Ref": "BrightTankResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "AllocatedFrome6ffef86",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/AllocatedFrom"
+                    },
+                    {
+                        "LogicalId": "BeerShipped40cf555d",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/BeerShipped"
+                    },
+                    {
+                        "LogicalId": "BeerPV39bde56d",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Beer_PV"
+                    },
+                    {
+                        "LogicalId": "BeerSP34f9aaab",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Beer_SP"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValveCLS61254ccf",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/ChillWaterValve_CLS"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValveOLS6fdb287d",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/ChillWaterValve_OLS"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValvePV7b4d5803",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/ChillWaterValve_PV"
+                    },
+                    {
+                        "LogicalId": "ConsGreenBeerFromLote981a81c",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Cons_GreenBeer_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsGreenBeerItem0f8e73e7",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Cons_GreenBeer_Item"
+                    },
+                    {
+                        "LogicalId": "HoldTimeETb71605bf",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/HoldTime_ET"
+                    },
+                    {
+                        "LogicalId": "HoldTimePT30f557c8",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "InletValveCLS429ec8be",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/InletValve_CLS"
+                    },
+                    {
+                        "LogicalId": "InletValveOLS3ee170bb",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/InletValve_OLS"
+                    },
+                    {
+                        "LogicalId": "InletValvePV9b8b7832",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/InletValve_PV"
+                    },
+                    {
+                        "LogicalId": "LevelPVa5e05868",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Level_PV"
+                    },
+                    {
+                        "LogicalId": "MaterialID2ce93a31",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/MaterialID"
+                    },
+                    {
+                        "LogicalId": "Namedf45d7b2"
+                    },
+                    {
+                        "LogicalId": "OutletPumpAuxContact6b8655e1",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/OutletPump_AuxContact"
+                    },
+                    {
+                        "LogicalId": "OutletPumpPV23c9bb14",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/OutletPump_PV"
+                    },
+                    {
+                        "LogicalId": "OutletValveCLS9a10e2b6",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/OutletValve_CLS"
+                    },
+                    {
+                        "LogicalId": "OutletValveOLS1c0c746c",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/OutletValve_OLS"
+                    },
+                    {
+                        "LogicalId": "OutletValvePV9a83418b",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/OutletValve_PV"
+                    },
+                    {
+                        "LogicalId": "ProdBeerItem23a051ad",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Prod_Beer_Item"
+                    },
+                    {
+                        "LogicalId": "ProdBeerToLot628e4344",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Prod_Beer_ToLot"
+                    },
+                    {
+                        "LogicalId": "ProductionIDf91d0f1b",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/ProductionID"
+                    },
+                    {
+                        "LogicalId": "ShipToTankcce36f75",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/ShipTo_Tank"
+                    },
+                    {
+                        "LogicalId": "State66410e15",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/State"
+                    },
+                    {
+                        "LogicalId": "Statusfc0a0f72",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Status"
+                    },
+                    {
+                        "LogicalId": "TemperaturePV67c6ca78",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Temperature_PV"
+                    },
+                    {
+                        "LogicalId": "TemperatureSP69d576bb",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Temperature_SP"
+                    },
+                    {
+                        "LogicalId": "Utilization4a30f194",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/Utilization"
+                    },
+                    {
+                        "LogicalId": "UtilizationState428d114e",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank301/UtilizationState"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "BrightTank302": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "BrightTank302",
+                "AssetModelId": {
+                    "Ref": "BrightTankResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "AllocatedFrome6ffef86",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/AllocatedFrom"
+                    },
+                    {
+                        "LogicalId": "BeerShipped40cf555d",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/BeerShipped"
+                    },
+                    {
+                        "LogicalId": "BeerPV39bde56d",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Beer_PV"
+                    },
+                    {
+                        "LogicalId": "BeerSP34f9aaab",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Beer_SP"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValveCLS61254ccf",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/ChillWaterValve_CLS"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValveOLS6fdb287d",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/ChillWaterValve_OLS"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValvePV7b4d5803",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/ChillWaterValve_PV"
+                    },
+                    {
+                        "LogicalId": "ConsGreenBeerFromLote981a81c",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Cons_GreenBeer_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsGreenBeerItem0f8e73e7",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Cons_GreenBeer_Item"
+                    },
+                    {
+                        "LogicalId": "HoldTimeETb71605bf",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/HoldTime_ET"
+                    },
+                    {
+                        "LogicalId": "HoldTimePT30f557c8",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "InletValveCLS429ec8be",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/InletValve_CLS"
+                    },
+                    {
+                        "LogicalId": "InletValveOLS3ee170bb",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/InletValve_OLS"
+                    },
+                    {
+                        "LogicalId": "InletValvePV9b8b7832",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/InletValve_PV"
+                    },
+                    {
+                        "LogicalId": "LevelPVa5e05868",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Level_PV"
+                    },
+                    {
+                        "LogicalId": "MaterialID2ce93a31",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/MaterialID"
+                    },
+                    {
+                        "LogicalId": "Namedf45d7b2"
+                    },
+                    {
+                        "LogicalId": "OutletPumpAuxContact6b8655e1",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/OutletPump_AuxContact"
+                    },
+                    {
+                        "LogicalId": "OutletPumpPV23c9bb14",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/OutletPump_PV"
+                    },
+                    {
+                        "LogicalId": "OutletValveCLS9a10e2b6",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/OutletValve_CLS"
+                    },
+                    {
+                        "LogicalId": "OutletValveOLS1c0c746c",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/OutletValve_OLS"
+                    },
+                    {
+                        "LogicalId": "OutletValvePV9a83418b",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/OutletValve_PV"
+                    },
+                    {
+                        "LogicalId": "ProdBeerItem23a051ad",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Prod_Beer_Item"
+                    },
+                    {
+                        "LogicalId": "ProdBeerToLot628e4344",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Prod_Beer_ToLot"
+                    },
+                    {
+                        "LogicalId": "ProductionIDf91d0f1b",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/ProductionID"
+                    },
+                    {
+                        "LogicalId": "ShipToTankcce36f75",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/ShipTo_Tank"
+                    },
+                    {
+                        "LogicalId": "State66410e15",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/State"
+                    },
+                    {
+                        "LogicalId": "Statusfc0a0f72",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Status"
+                    },
+                    {
+                        "LogicalId": "TemperaturePV67c6ca78",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Temperature_PV"
+                    },
+                    {
+                        "LogicalId": "TemperatureSP69d576bb",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Temperature_SP"
+                    },
+                    {
+                        "LogicalId": "Utilization4a30f194",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/Utilization"
+                    },
+                    {
+                        "LogicalId": "UtilizationState428d114e",
+                        "Alias": "/Breweries/IrvinePlant/BeerStorage/BrightTank302/UtilizationState"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "Brewing": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Brewing",
+                "AssetModelId": {
+                    "Ref": "AreaResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Namef722ac22"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "BoilKettle100"
+                        },
+                        "LogicalId": "BoilKettle"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "BoilKettle200"
+                        },
+                        "LogicalId": "BoilKettle"
+                    }
+                ]
+            }
+        },
+        "BoilKettle100": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "BoilKettle100",
+                "AssetModelId": {
+                    "Ref": "BoilKettleResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "BrewedWortPV777da0b1",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/BrewedWort_PV"
+                    },
+                    {
+                        "LogicalId": "Demand58881c5a"
+                    },
+                    {
+                        "LogicalId": "Downtimea50ac419"
+                    },
+                    {
+                        "LogicalId": "HoldTimePT5b57eaec",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "HopsSP6df75463",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/Hops_SP"
+                    },
+                    {
+                        "LogicalId": "InletValvePVe92e9980",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/InletValve_PV"
+                    },
+                    {
+                        "LogicalId": "LevelPVc0dbcdc0",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/Level_PV"
+                    },
+                    {
+                        "LogicalId": "Maintenance6d3c0ba8"
+                    },
+                    {
+                        "LogicalId": "OEEPer5min4ca78cee"
+                    },
+                    {
+                        "LogicalId": "OutletValvePV90d31612",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/OutletValve_PV"
+                    },
+                    {
+                        "LogicalId": "PerformancePer5minbdabba40"
+                    },
+                    {
+                        "LogicalId": "QualityPer5minef070534"
+                    },
+                    {
+                        "LogicalId": "Runtime27a54c20"
+                    },
+                    {
+                        "LogicalId": "Scrap46e5c4d5",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/Scrap"
+                    },
+                    {
+                        "LogicalId": "Statusbf313782",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/Status"
+                    },
+                    {
+                        "LogicalId": "SteamValvePVe6cb4ef4",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/SteamValve_PV"
+                    },
+                    {
+                        "LogicalId": "TargetOEE3bc7aec8"
+                    },
+                    {
+                        "LogicalId": "TemperatureSP96e35f22",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/Temperature_SP"
+                    },
+                    {
+                        "LogicalId": "UtilizationPer5mindcc39652"
+                    },
+                    {
+                        "LogicalId": "UtilizationState6c79394e",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/UtilizationState"
+                    },
+                    {
+                        "LogicalId": "WortPV06ec146e",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle100/Wort_PV"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "BoilKettle200": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "BoilKettle200",
+                "AssetModelId": {
+                    "Ref": "BoilKettleResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "BrewedWortPV777da0b1",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/BrewedWort_PV"
+                    },
+                    {
+                        "LogicalId": "Demand58881c5a"
+                    },
+                    {
+                        "LogicalId": "Downtimea50ac419"
+                    },
+                    {
+                        "LogicalId": "HoldTimePT5b57eaec",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "HopsSP6df75463",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/Hops_SP"
+                    },
+                    {
+                        "LogicalId": "InletValvePVe92e9980",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/InletValve_PV"
+                    },
+                    {
+                        "LogicalId": "LevelPVc0dbcdc0",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/Level_PV"
+                    },
+                    {
+                        "LogicalId": "Maintenance6d3c0ba8"
+                    },
+                    {
+                        "LogicalId": "OEEPer5min4ca78cee"
+                    },
+                    {
+                        "LogicalId": "OutletValvePV90d31612",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/OutletValve_PV"
+                    },
+                    {
+                        "LogicalId": "PerformancePer5minbdabba40"
+                    },
+                    {
+                        "LogicalId": "QualityPer5minef070534"
+                    },
+                    {
+                        "LogicalId": "Runtime27a54c20"
+                    },
+                    {
+                        "LogicalId": "Scrap46e5c4d5",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/Scrap"
+                    },
+                    {
+                        "LogicalId": "Statusbf313782",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/Status"
+                    },
+                    {
+                        "LogicalId": "SteamValvePVe6cb4ef4",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/SteamValve_PV"
+                    },
+                    {
+                        "LogicalId": "TargetOEE3bc7aec8"
+                    },
+                    {
+                        "LogicalId": "TemperatureSP96e35f22",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/Temperature_SP"
+                    },
+                    {
+                        "LogicalId": "UtilizationPer5mindcc39652"
+                    },
+                    {
+                        "LogicalId": "UtilizationState6c79394e",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/UtilizationState"
+                    },
+                    {
+                        "LogicalId": "WortPV06ec146e",
+                        "Alias": "/Breweries/IrvinePlant/Brewing/BoilKettle200/Wort_PV"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "Fermentation": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Fermentation",
+                "AssetModelId": {
+                    "Ref": "AreaResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Namef722ac22"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Fermenter100"
+                        },
+                        "LogicalId": "Fermenter"
+                    }
+                ]
+            }
+        },
+        "Fermenter100": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Fermenter100",
+                "AssetModelId": {
+                    "Ref": "FermenterResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "ChillWaterValveCLS53213274",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/ChillWaterValve_CLS"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValveOLS0e08b0c4",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/ChillWaterValve_OLS"
+                    },
+                    {
+                        "LogicalId": "ChillWaterValvePV388a9d4f",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/ChillWaterValve_PV"
+                    },
+                    {
+                        "LogicalId": "ConsBrewedWortFromLotcdcd6513",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Cons_BrewedWort_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsBrewedWortItem1283ef8f",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Cons_BrewedWort_Item"
+                    },
+                    {
+                        "LogicalId": "ConsYeastFromLot5c9f785d",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Cons_Yeast_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsYeastItem4c1e4dbd",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Cons_Yeast_Item"
+                    },
+                    {
+                        "LogicalId": "GreenBeerPVabb0553d",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/GreenBeer_PV"
+                    },
+                    {
+                        "LogicalId": "HoldTimeET3e914faa",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/HoldTime_ET"
+                    },
+                    {
+                        "LogicalId": "HoldTimePT17f7b44d",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "InletValveCLSea9b3d15",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/InletValve_CLS"
+                    },
+                    {
+                        "LogicalId": "InletValveOLSbf42dc31",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/InletValve_OLS"
+                    },
+                    {
+                        "LogicalId": "InletValvePV89cc2ec4",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/InletValve_PV"
+                    },
+                    {
+                        "LogicalId": "LevelPVc9c051f9",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Level_PV"
+                    },
+                    {
+                        "LogicalId": "MaterialIDd191bc28",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/MaterialID"
+                    },
+                    {
+                        "LogicalId": "Name80d11a4f"
+                    },
+                    {
+                        "LogicalId": "OutletPumpAuxContactdd178f8f",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/OutletPump_AuxContact"
+                    },
+                    {
+                        "LogicalId": "OutletPumpPVaa973dfc",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/OutletPump_PV"
+                    },
+                    {
+                        "LogicalId": "OutletValveCLScf3d917b",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/OutletValve_CLS"
+                    },
+                    {
+                        "LogicalId": "OutletValveOLSe7724552",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/OutletValve_OLS"
+                    },
+                    {
+                        "LogicalId": "OutletValvePVe062b5df",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/OutletValve_PV"
+                    },
+                    {
+                        "LogicalId": "ProductionID5b189635",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/ProductionID"
+                    },
+                    {
+                        "LogicalId": "Scrapc0635e82",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Scrap"
+                    },
+                    {
+                        "LogicalId": "ShipToTank3711787b",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/ShipTo_Tank"
+                    },
+                    {
+                        "LogicalId": "Statef04af0f5",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/State"
+                    },
+                    {
+                        "LogicalId": "Status40ccdcff",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Status"
+                    },
+                    {
+                        "LogicalId": "TemperaturePV19d06c8a",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Temperature_PV"
+                    },
+                    {
+                        "LogicalId": "YeastPVc4fc23d8",
+                        "Alias": "/Breweries/IrvinePlant/Fermentation/Fermenter100/Yeast_PV"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "Mashing": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Mashing",
+                "AssetModelId": {
+                    "Ref": "AreaResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Namef722ac22"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "MashTun100"
+                        },
+                        "LogicalId": "MashTun"
+                    },
+                    {
+                        "ChildAssetId": {
+                            "Ref": "MaltMill100"
+                        },
+                        "LogicalId": "MaltMill"
+                    }
+                ]
+            }
+        },
+        "MashTun100": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "MashTun100",
+                "AssetModelId": {
+                    "Ref": "MashTunResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "AgitatorPVd659271f",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Agitator_PV"
+                    },
+                    {
+                        "LogicalId": "Demandaf2a6d54"
+                    },
+                    {
+                        "LogicalId": "Downtime7fe19766"
+                    },
+                    {
+                        "LogicalId": "HoldTimePTdbcf78f9",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "Maintenance01726b33"
+                    },
+                    {
+                        "LogicalId": "MaterialID2130f4b7",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/MaterialID"
+                    },
+                    {
+                        "LogicalId": "OEEPer5min896bf20a"
+                    },
+                    {
+                        "LogicalId": "OutletPumpPV7b60f742",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/OutletPump_PV"
+                    },
+                    {
+                        "LogicalId": "OutletValvePVe1586b29",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/OutletValve_PV"
+                    },
+                    {
+                        "LogicalId": "PerformancePer5min9b04a355"
+                    },
+                    {
+                        "LogicalId": "ProdWortItemef11d237",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Prod_Wort_Item"
+                    },
+                    {
+                        "LogicalId": "ProdWortToLotc6ec306b",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Prod_Wort_ToLot"
+                    },
+                    {
+                        "LogicalId": "QualityPer5min4e9fd782"
+                    },
+                    {
+                        "LogicalId": "Runtime289dfc8b"
+                    },
+                    {
+                        "LogicalId": "Scrapd7f97a53",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Scrap"
+                    },
+                    {
+                        "LogicalId": "ScrapToLot148d2cf4",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Scrap_ToLot"
+                    },
+                    {
+                        "LogicalId": "ShipComplete750d8d32",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/ShipComplete"
+                    },
+                    {
+                        "LogicalId": "SoakTempSP10b2059dd",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/SoakTempSP1"
+                    },
+                    {
+                        "LogicalId": "SoakTempSP2dbf8835b",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/SoakTempSP2"
+                    },
+                    {
+                        "LogicalId": "SoakTimeSP1bd374093",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/SoakTimeSP1"
+                    },
+                    {
+                        "LogicalId": "SoakTimeSP292786d0c",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/SoakTimeSP2"
+                    },
+                    {
+                        "LogicalId": "Statusb7d47b8a",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Status"
+                    },
+                    {
+                        "LogicalId": "SteamValvePV113e5ad5",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/SteamValve_PV"
+                    },
+                    {
+                        "LogicalId": "TemperaturePV634771e7",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Temperature_PV"
+                    },
+                    {
+                        "LogicalId": "Utilization4d94e5e9",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Utilization"
+                    },
+                    {
+                        "LogicalId": "UtilizationPer5min2469e954"
+                    },
+                    {
+                        "LogicalId": "UtilizationStatee8cedd4b",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/UtilizationState"
+                    },
+                    {
+                        "LogicalId": "WaterValvePVdc3bced6",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/WaterValve"
+                    },
+                    {
+                        "LogicalId": "WaterPV77fdf4ac",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Water_PV"
+                    },
+                    {
+                        "LogicalId": "WortPV1e3224fe",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MashTun100/Wort_PV"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "MaltMill100": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "MaltMill100",
+                "AssetModelId": {
+                    "Ref": "MaltMillResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "MaltMillPVd3b70fe3",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MaltMill100/MaltMill_PV"
+                    },
+                    {
+                        "LogicalId": "MaltPVdc06a825",
+                        "Alias": "/Breweries/IrvinePlant/Mashing/MaltMill100/Malt_PV"
+                    },
+                    {
+                        "LogicalId": "Name960da898"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "Roasting": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Roasting",
+                "AssetModelId": {
+                    "Ref": "AreaResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Namef722ac22"
+                    }
+                ],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "Roaster100"
+                        },
+                        "LogicalId": "Roaster"
+                    }
+                ]
+            }
+        },
+        "Roaster100": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Roaster100",
+                "AssetModelId": {
+                    "Ref": "RoasterResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "Demandc7e2f953"
+                    },
+                    {
+                        "LogicalId": "Downtime8f2e925d"
+                    },
+                    {
+                        "LogicalId": "HoldTimePT63053612",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "Maintenance3625abf2"
+                    },
+                    {
+                        "LogicalId": "MaltPVf6d57f2b",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/Malt_PV"
+                    },
+                    {
+                        "LogicalId": "MaterialID45da914f",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/MaterialID"
+                    },
+                    {
+                        "LogicalId": "Name0c78cdb9"
+                    },
+                    {
+                        "LogicalId": "OEEPer5min10caf924",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/OEEPer5min"
+                    },
+                    {
+                        "LogicalId": "PerformancePer5minee738a82",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/PerformancePer5min"
+                    },
+                    {
+                        "LogicalId": "ProductionID7b6a91f1",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/ProductionID"
+                    },
+                    {
+                        "LogicalId": "QualityPer5minc84f18e5",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/QualityPer5min"
+                    },
+                    {
+                        "LogicalId": "Runtime8fd495f3"
+                    },
+                    {
+                        "LogicalId": "Scrap29877a9b",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/Scrap"
+                    },
+                    {
+                        "LogicalId": "State6bebae45",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/State"
+                    },
+                    {
+                        "LogicalId": "TemperaturePV1ac0fb06",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/Temperature_PV"
+                    },
+                    {
+                        "LogicalId": "UtilizationPer5min940a7299",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/UtilizationPer5min"
+                    },
+                    {
+                        "LogicalId": "UtilizationState77df5627",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/UtilizationState"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        },
+        "Bottling": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "Bottling",
+                "AssetModelId": {
+                    "Ref": "BottlingAreaResource"
+                },
+                "AssetProperties": [],
+                "AssetHierarchies": [
+                    {
+                        "ChildAssetId": {
+                            "Ref": "BottleLine401"
+                        },
+                        "LogicalId": "BottleLines"
+                    }
+                ]
+            }
+        },
+        "BottleLine401": {
+            "Type": "AWS::IoTSiteWise::Asset",
+            "Properties": {
+                "AssetName": "BottleLine401",
+                "AssetModelId": {
+                    "Ref": "BottleLineResource"
+                },
+                "AssetProperties": [
+                    {
+                        "LogicalId": "AllocatedFromdb21235b",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/AllocatedFrom"
+                    },
+                    {
+                        "LogicalId": "BeerPV6ac101b1",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Beer_PV"
+                    },
+                    {
+                        "LogicalId": "BottlePV07ecb20a",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Bottle_PV"
+                    },
+                    {
+                        "LogicalId": "BottleSPf19ef29a",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Bottle_SP"
+                    },
+                    {
+                        "LogicalId": "ConsBeerFromLot83896741",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Beer_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsBeerItemef1ab1d6",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Beer_Item"
+                    },
+                    {
+                        "LogicalId": "ConsBottleFromLot70393837",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Bottle_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsBottleItemc77883de",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Bottle_Item"
+                    },
+                    {
+                        "LogicalId": "ConsCapFromLotd3d47cce",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Cap_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsLabelFromLot82f9cfd6",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Label_FromLot"
+                    },
+                    {
+                        "LogicalId": "ConsLabelItema3f95d48",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Cons_Label_Item"
+                    },
+                    {
+                        "LogicalId": "HoldTimeETe3699475",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/HoldTime_ET"
+                    },
+                    {
+                        "LogicalId": "HoldTimePTf682d42d",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/HoldTime_PT"
+                    },
+                    {
+                        "LogicalId": "LevelPVa2328368",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Level_PV"
+                    },
+                    {
+                        "LogicalId": "MaterialID518fb40a",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/MaterialID"
+                    },
+                    {
+                        "LogicalId": "Name5a32c7e2"
+                    },
+                    {
+                        "LogicalId": "ProdBottledBeerIteme2c26434",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Prod_BottledBeer_Item"
+                    },
+                    {
+                        "LogicalId": "ProdBottledBeerToLotd76e1f0b",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Prod_BottledBeer_ToLot"
+                    },
+                    {
+                        "LogicalId": "ProductionIDcbb517b5",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/ProductionID"
+                    },
+                    {
+                        "LogicalId": "Scrapbdaccb48",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Scrap"
+                    },
+                    {
+                        "LogicalId": "SpeedPVc78649e2",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Speed_PV"
+                    },
+                    {
+                        "LogicalId": "SpeedSP1e7a1e88",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Speed_SP"
+                    },
+                    {
+                        "LogicalId": "Statefa32999e",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/State"
+                    },
+                    {
+                        "LogicalId": "Status4d6fe9b0",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Status"
+                    },
+                    {
+                        "LogicalId": "TemperaturePV70875016",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Temperature_PV"
+                    },
+                    {
+                        "LogicalId": "TemperatureSPe4aa0ba6",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Temperature_SP"
+                    },
+                    {
+                        "LogicalId": "Utilizatione7a10842",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/Utilization"
+                    },
+                    {
+                        "LogicalId": "UtilizationState9151f7ec",
+                        "Alias": "/Breweries/IrvinePlant/Bottling/BottleLine401/UtilizationState"
+                    }
+                ],
+                "AssetHierarchies": []
+            }
+        }
+    }
+}

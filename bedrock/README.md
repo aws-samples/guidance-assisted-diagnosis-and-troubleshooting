@@ -128,12 +128,12 @@ This guidance uses AWS CDK. If you are using aws-cdk for the first time, please 
 ## Deployment Steps
 1. Clone the repository:
    ```
-   git clone https://github.com/aws-solutions-library-samples/guidance-for-assisted-diagnosis-and-troubleshooting-on-aws
+   git clone https://github.com/aws-samples/guidance-assisted-diagnosis-and-troubleshooting.git
    ```
 
 2. Navigate to the folder: source using
    ```
-   cd source
+   cd bedrock/source
    ```
 
 3. This project is a Python project. Switch to the virtual environment using the below command:

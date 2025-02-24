@@ -1,0 +1,93 @@
+openapi: 3.0.1
+info:
+  title: WorkOrder
+  description: API for creating and managing work orders in a manufacturing environment
+  version: 1.0.0
+servers:
+  - url: 
+paths:
+  /submitWorkOrder:
+    post:
+      summary: Submit a new work order
+      description: |
+        Create a new work order for equipment maintenance or repair. Use this operation when an employee needs to report an issue with a piece of equipment or schedule routine maintenance.
+        This API will generate a unique 5-digit work order number, record the submission time, and return a confirmation message with the details.
+      operationId: createWorkOrder
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - equipmentId
+                - requestDescription
+              properties:
+                equipmentId:
+                  type: string
+                  description: Name of the equipment to be serviced. For example Boiler 123.
+                requestDescription:
+                  type: string
+                  description: Detailed description of the maintenance or repair request, including the issue and any relevant observations
+              example:
+                equipmentId: "Boiler 123"
+                requestDescription: "Annual maintenance and calibration for boiler"
+      responses:
+        '201':
+          description: Work order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrderResponse'
+              example:
+                workOrderNumber: "22592"
+                equipmentId: "Boiler 123"
+                requestDescription: "Annual maintenance and calibration for boiler"
+                submissionDatetime: "2024-08-26T21:13:00.338225Z"
+                message: "Work order 22592 has been submitted for Boiler 123 at 2024-08-26T21:13:00.338225Z with the following request: Annual maintenance and calibration for boiler"
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME type of the response body
+              example: application/json
+        '400':
+          description: Bad request due to invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    WorkOrderResponse:
+      type: object
+      properties:
+        workOrderNumber:
+          type: string
+          description: Unique 5-digit identifier for the created work order
+        equipmentId:
+          type: string
+          description: Identifier of the equipment for which the work order was created
+        requestDescription:
+          type: string
+          description: Description of the maintenance or repair request
+        submissionDatetime:
+          type: string
+          format: date-time
+          description: Date and time when the work order was submitted, in ISO 8601 format with microsecond precision
+        message:
+          type: string
+          description: Confirmation message with work order details, including the work order number, equipment ID, submission time, and request description
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Detailed error message describing the issue

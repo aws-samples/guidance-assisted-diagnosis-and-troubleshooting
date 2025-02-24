@@ -1,0 +1,25 @@
+@import "@iot-app-kit/components/styles.css";
+
+div.DrawerClosed {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 20px);
+    transition: width 0.3s ease;
+}
+
+div.DrawerOpened {
+    width: calc(100% - 280px)
+}
+
+.chat-ui_chat_container__tGI-M {
+    position: relative;
+    width: 95%;
+    margin: 0 auto;
+    padding: 5px;
+    min-height: calc(100vh - 0vh);
+}
+
+.kpi-container {
+    padding-bottom: 1vw;
+    text-align: center;
+}
