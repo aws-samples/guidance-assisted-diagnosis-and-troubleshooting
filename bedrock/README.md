@@ -23,6 +23,9 @@
 
 ## Reference Architecture
 
+> Architecture diagram presents a high-level conceptual overview of how the Assisted Diagnosis and Troubleshooting system functions on AWS. It illustrates the key AWS services involved, their interactions, and how they collectively enable AI-powered troubleshooting.
+
+
 
 ### Architecture Diagram Bedrock RAG 
 
@@ -52,6 +55,10 @@
 
 ## Demo
 ### Architecture
+
+> Architecture diagram represents the actual deployment architecture of this guidance package. It shows the specific AWS resources that will be provisioned when you follow the deployment steps, including the infrastructure, configurations, and services instantiated by the provided code repository.
+
+
 ![Assisted Diagnosis and Troubleshooting on AWS Architecture](assets/assisted-diagnoses-and-troubleshooting-demo-architecture.png)
 
 ### Cost
