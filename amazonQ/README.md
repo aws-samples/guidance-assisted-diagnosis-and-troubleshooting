@@ -40,4 +40,4 @@ The maintenance plugin provides access to a Lambda function that can connect to 
 
 
 ## Workshop
-To deploy Assited Diagnosis and Troubleshooting on AWS with Amazon Q follow instructions in [Building a Smart Factory with Amazon Q Workshop](https://catalog.workshops.aws/smart-factory-amazon-q/en-US)
+Learn more about Assisted Diagnosis and Troubleshooting on AWS with Amazon Q through the [Building a Smart Factory with Amazon Q Workshop](https://catalog.workshops.aws/smart-factory-amazon-q/en-US)
