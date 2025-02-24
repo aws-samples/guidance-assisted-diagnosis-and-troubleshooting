@@ -206,9 +206,9 @@ This guidance uses AWS CDK. If you are using aws-cdk for the first time, please 
 ## Guidance Demo
 ![chatbot](assets/demo.gif)
 
+To run the demo yourself, refer to the demo script available in the repository:
+[Demo Script](/bedrock/demoscript/demoscript.md)
 
-## Next Steps
-TBD
 
 
 ## Cleanup
@@ -227,13 +227,11 @@ TBD
 2. **Verify resource deletion**:
    - Log in to the AWS Management Console and navigate to the relevant services to ensure all the resources have been successfully deleted.
 
-### Manual Cleanup of Additional Resources
-TBD
 
 
 
 ## FAQ, known issues, additional considerations, and limitations
-TBD
+   - The dashboard currently displays only the Roaster Asset for demonstration purposes. It does not support multiple assets in its current implementation.
 
 
 ## Revisions
