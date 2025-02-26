@@ -10,6 +10,7 @@
     "@aws-sdk/client-iotsitewise": "^3.682.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.682.0",
     "@aws-sdk/credential-providers": "^3.682.0",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@cloudscape-design/global-styles": "^1.0.32",
     "@iot-app-kit/core": "10.12.2",
     "@iot-app-kit/core-util": "10.12.2",
