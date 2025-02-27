@@ -82,32 +82,36 @@ def invoke_agent(user_input, session_id):
 
 def get_agent_response(response):
     logger.info(f"Getting agent response... {response}")
+
+    # Ensure both values are always returned
+    chunk_text = "No response received"  # Default value
+    source_file_list = []  # Default as empty list
+
     if "completion" not in response:
-        return f"No completion found in response: {response}"
+        logger.error(f"No completion found in response: {response}")
+        return chunk_text, source_file_list  # ✅ Now returns TWO values
+
     trace_list = []
     for event in response["completion"]:
         logger.info(f"Event keys: {event.keys()}")
+
         if "trace" in event:
             logger.info(event["trace"])
             trace_list.append(event["trace"])
 
-        # Extract the traces
         if "chunk" in event:
-            # Extract the bytes from the chunk
             chunk_bytes = event["chunk"]["bytes"]
-
-            # Convert bytes to string, assuming UTF-8 encoding
             chunk_text = chunk_bytes.decode("utf-8")
+            logger.info(f"Response from the agent: {chunk_text}")
 
-            # Print the response text
-            print("Response from the agent:", chunk_text)
-    else:
-        try:
-            source_file_list = extract_source_list_from_kb(trace_list)
-        except Exception as e:
-            logger.info(f"Error extracting source list from KB: {e}")
-            source_file_list = ""
-    return chunk_text, source_file_list
+    # Ensuring source_file_list is set, even if no trace data exists
+    try:
+        source_file_list = extract_source_list_from_kb(trace_list) if trace_list else []
+    except Exception as e:
+        logger.warning(f"Error extracting source list from KB: {e}")
+        source_file_list = []
+
+    return chunk_text, source_file_list 
 
 
 def extract_source_list_from_kb(trace_list):

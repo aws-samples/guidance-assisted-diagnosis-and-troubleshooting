@@ -173,6 +173,8 @@ This guidance uses AWS CDK. If you are using aws-cdk for the first time, please 
       ./deploy.sh 
       ```
 
+9. Create alias for Bedrock agent, navigate to Bedrock in AWS console, click Agents in a sidebar, click assisted-diagnosis-agent, prepare agent and give it alias
+
 ## Deployment Validation
 - To verify a successful deployment of this guidance, open [CloudFormation](https://console.aws.amazon.com/cloudformation/home) console, and verify that the status of the stacks named `SiteWiseAssetsStack`,`SimulatorServerStack`, `ADBStack`, `FrontendStack`  is `CREATE_COMPLETE`.
 - Once the project is deployed, AWS assets are created in your application. You can navigate to AWS CloudFormation console and click on aforementioned stacks. Now you can click on `resources` tab which shows all the resources created by the stack.
