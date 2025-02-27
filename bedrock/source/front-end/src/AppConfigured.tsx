@@ -62,7 +62,7 @@ export default function AppConfigured() {
             },
             API: {
               REST: {
-                AssistedDiagnosesRestApi: {
+                AssistedDiagnosisRestApi: {
                   endpoint: appConfig.restApiEndpoint
                 }
               }
@@ -126,7 +126,7 @@ export default function AppConfigured() {
                   padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
                   level={3}
                 >
-                  Assisted Diagnoses and Troubleshooting
+                  Assisted Diagnosis and Troubleshooting
                 </Heading>
               );
             },

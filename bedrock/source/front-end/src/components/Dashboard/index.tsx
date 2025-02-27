@@ -275,7 +275,7 @@ export function Dashboard() {
                 className={activeDrawerId ? 'DrawerOpened' : 'DrawerClosed'}
                 identity={{
                     href: "#",
-                    title: "Assisted Diagnoses and Troubleshooting Demo",
+                    title: "Assisted Diagnosis and Troubleshooting Demo",
                 }}
                 i18nStrings={{ overflowMenuTriggerText: "More", overflowMenuTitleText: "More" }}
                 utilities={[

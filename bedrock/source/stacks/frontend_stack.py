@@ -33,7 +33,6 @@ class FrontendStack(Stack):
         frontend_bucket = s3.Bucket(
             self,
             f"{prefix}FrontendBucket",
-            bucket_name=f"{prefix.lower()}-frontend-bucket",
             versioned=True,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,

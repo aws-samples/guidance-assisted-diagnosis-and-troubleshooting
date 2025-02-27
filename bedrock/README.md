@@ -59,7 +59,7 @@
 > Architecture diagram represents the actual deployment architecture of this guidance package. It shows the specific AWS resources that will be provisioned when you follow the deployment steps, including the infrastructure, configurations, and services instantiated by the provided code repository.
 
 
-![Assisted Diagnosis and Troubleshooting on AWS Architecture](assets/assisted-diagnoses-and-troubleshooting-demo-architecture.png)
+![Assisted Diagnosis and Troubleshooting on AWS Architecture](assets/assisted-diagnosis-and-troubleshooting-demo-architecture.png)
 
 ### Cost
 > **Disclaimer**  
@@ -104,7 +104,7 @@ Before deploying the guidance code, ensure that the following required tools hav
 
 **Required resources:**
 
-- [Bedrock Model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) for Claude 3 Haiku and Amazon Titan Multimodal embeddings
+- [Bedrock Model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) for Claude 3 Haiku and Amazon Titan Text Embeddings V2
 - AWS CLI
 - [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
 
@@ -112,10 +112,10 @@ Before deploying the guidance code, ensure that the following required tools hav
 
 1. Log in to the AWS Management Console
 2. Search for "Bedrock" in the search bar
-3. Click "Get Started" on the Amazon Bedrock service page
-4. Click "Manage Model Access" in the popup
-5. Select "Amazon" from the list of available models
-6. Click "Request Model Access" at the bottom of the page
+3. Click "Manage Access" in the sidebar
+4. Click "Enable Specific Models"
+4. Select Claude 3 Haiku and Amazon Titan Text Embeddings V2 from the list of available models
+5. Click "Request Model Access" at the bottom of the page
 
 ### Supported Regions
 
@@ -151,29 +151,20 @@ This guidance uses AWS CDK. If you are using aws-cdk for the first time, please 
    python -m pip install -r requirements.txt
    ```
 
-6. Initialize CDK within the project using the command:
-   ```
-   cdk init
-   ```
 
-7. Bootstrap the CDK environment using the command:
+6. Bootstrap the CDK environment using the command:
    ```
    cdk bootstrap
    ```
 
-8. Verify that the CDK deployment correctly synthesizes the CloudFormation template:
-   ```
-   cdk synth
-   ```
-
-9. Deploy the Backend and Frontend Stack with the following command:
+7. Deploy the Backend and Frontend Stack with the following command:
    ```
    chmod +x ./deploy.sh 
 
    ./deploy.sh 
    ```
 
-10. Build the frontend application and upload assets to S3 bucket:
+8. Build the frontend application and upload assets to S3 bucket:
       ```
       cd front-end/
 

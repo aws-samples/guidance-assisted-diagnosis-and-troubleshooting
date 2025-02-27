@@ -62,7 +62,7 @@ class BedrockStack(Stack):
 
         print(f"OSTYPE detected as: {ostype}.")
 
-        prefix = "AssistedDiagnoses"
+        prefix = "AssistedDiagnosis"
 
         agent_assets_bucket = self.create_data_source_bucket()
         self.upload_files_to_s3(agent_assets_bucket)
@@ -231,7 +231,7 @@ class BedrockStack(Stack):
         cfn_agent = bedrock.CfnAgent(
             self,
             "ChatbotBedrockAgent",
-            agent_name="assisted-diagnoses-agent",
+            agent_name="assisted-diagnosis-agent",
             # the properties below are optional
             action_groups=[
                 bedrock.CfnAgent.AgentActionGroupProperty(
@@ -891,8 +891,8 @@ class BedrockStack(Stack):
                 "KNOWLEDGEBASE_ID": knowledge_base.attr_knowledge_base_id,
                 "KNOWLEDGEBASE_DATASOURCE_ID": cfn_data_source.attr_data_source_id,
                 "BEDROCK_AGENT_ID": bedrock_agent.attr_agent_id,
-                "BEDROCK_AGENT_NAME": "assisted-diagnoses-agent",
-                "BEDROCK_AGENT_ALIAS": "assisted-diagnoses-agent-dev",
+                "BEDROCK_AGENT_NAME": "assisted-diagnosis-agent",
+                "BEDROCK_AGENT_ALIAS": "assisted-diagnosis-agent-dev",
                 "BEDROCK_AGENT_RESOURCE_ROLE_ARN": agent_resource_role_arn,
                 "LOG_LEVEL": "info",
             },
@@ -921,7 +921,7 @@ class BedrockStack(Stack):
     
         rest_api = RestApi(
             self,
-            "AssistedDiagnosesRestApi",
+            "AssistedDiagnosisRestApi",
             endpoint_types=[EndpointType.REGIONAL],
             cloud_watch_role=True,
             default_cors_preflight_options={
