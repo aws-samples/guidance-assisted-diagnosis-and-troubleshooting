@@ -2957,7 +2957,8 @@
                         "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/QualityPer5min"
                     },
                     {
-                        "LogicalId": "Runtime8fd495f3"
+                        "LogicalId": "Runtime8fd495f3",
+                        "Alias": "/Breweries/IrvinePlant/Roasting/Roaster100/Runtime"
                     },
                     {
                         "LogicalId": "Scrap29877a9b",

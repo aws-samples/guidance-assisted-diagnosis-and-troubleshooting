@@ -51,6 +51,8 @@ OEE_PROPERTY=$(echo "$script_output" | jq -r '.roasterProperities.oeePer5min')
 PERFORMANCE_PROPERTY=$(echo "$script_output" | jq -r '.roasterProperities.performancePer5min')
 QUALITY_PROPERTY=$(echo "$script_output" | jq -r '.roasterProperities.qualityPer5min')
 UTILIZATION_PROPERTY=$(echo "$script_output" | jq -r '.roasterProperities.utilizationPer5min')
+RUNTIME_PROPERTY=$(echo "$script_output" | jq -r '.roasterProperities.runtime')
+
 
 # Write environment variables to .env file
 cat <<EOT > .env
@@ -67,6 +69,7 @@ REACT_APP_OEE_PROPERTY=$OEE_PROPERTY
 REACT_APP_PERFORMANCE_PROPERTY=$PERFORMANCE_PROPERTY
 REACT_APP_QUALITY_PROPERTY=$QUALITY_PROPERTY
 REACT_APP_UTILIZATION_PROPERTY=$UTILIZATION_PROPERTY
+REACT_APP_RUNTIME_PROPERTY=$RUNTIME_PROPERTY
 EOT
 
 echo ".env file created with environment variables."

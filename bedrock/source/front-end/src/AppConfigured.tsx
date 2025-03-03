@@ -38,6 +38,7 @@ export default function AppConfigured() {
           roasterPerformanceProperty: process.env.REACT_APP_PERFORMANCE_PROPERTY|| "",
           roasterQualityProperty: process.env.REACT_APP_QUALITY_PROPERTY|| "",
           roasterUtilizationProperty: process.env.REACT_APP_UTILIZATION_PROPERTY|| "",
+          roasterRuntimeProperty: process.env.REACT_APP_RUNTIME_PROPERTY|| ""
         };
 
         const missingKeys = Object.entries(appConfig)

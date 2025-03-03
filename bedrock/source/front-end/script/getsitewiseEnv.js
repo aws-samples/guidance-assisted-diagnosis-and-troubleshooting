@@ -137,7 +137,8 @@ const {
           oeePer5min: "",
           performancePer5min: "",
           qualityPer5min: "",
-          utilizationPer5min: ""
+          utilizationPer5min: "",
+          runtime: "",
         },
       };
   
@@ -174,11 +175,12 @@ const {
                 sitwiseModelObj.roasterProperities.qualityPer5min = prop.id;
               } else if (prop.alias === "/Breweries/IrvinePlant/Roasting/Roaster100/UtilizationPer5min" && prop.id) {
                 sitwiseModelObj.roasterProperities.utilizationPer5min = prop.id;
+              } else if (prop.alias === "/Breweries/IrvinePlant/Roasting/Roaster100/Runtime" && prop.id) {
+                sitwiseModelObj.roasterProperities.runtime = prop.id;
               }
             });
           }
         }
-  
         return sitwiseModelObj;
       } catch (error) {
         console.error("Error building asset model:", error);

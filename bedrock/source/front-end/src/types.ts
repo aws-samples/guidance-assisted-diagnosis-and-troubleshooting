@@ -30,5 +30,6 @@ export type AppConfig = {
   roasterOEEProperty: string,
   roasterPerformanceProperty: string,
   roasterQualityProperty: string,
-  roasterUtilizationProperty: string
+  roasterUtilizationProperty: string,
+  roasterRuntimeProperty: string
 }

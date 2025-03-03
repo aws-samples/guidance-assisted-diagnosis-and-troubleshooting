@@ -74,6 +74,7 @@ function Content(props: any) {
     const HOLD_TIME_PROPERTY = appConfig?.roasterHoldTimeProperty
     const TEMPERATURE_PROPERTY = appConfig?.roasterTemperatureProperty
     const SCRAP_PROPERTY = appConfig?.roasterScrapProperty
+    const RUNTIME_PROPERTY = appConfig?.roasterRuntimeProperty
 
 
     // const chartWidth = props.isChatOpen ? window.screen.width / 2.5 : (window.screen.width / 1.85)
@@ -210,7 +211,7 @@ function Content(props: any) {
                         assets: [{
                           assetId: assetId,
                           properties: [
-                            { propertyId: '9df74a66-97f6-4e2f-8761-4af4b2a788fe', refId: 'runtime-property' },
+                            { propertyId: RUNTIME_PROPERTY, refId: 'runtime-property' },
                           ]
                         }]
                       })
