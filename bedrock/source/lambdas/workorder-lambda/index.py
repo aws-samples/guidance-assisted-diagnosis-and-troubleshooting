@@ -13,9 +13,6 @@ def lambda_handler(event, context):
     apiPath = event.get('apiPath')
     httpMethod = event.get('httpMethod')
 
-    logger.info(f"Received event: {json.dumps(event)}")
-    logger.info(f"Received body: {event.get('body')}")
-
     try:
         if apiPath == '/submitWorkOrder' and httpMethod == 'POST':
             return handle_submit_work_order(event)

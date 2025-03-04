@@ -173,33 +173,44 @@ def get_current_value(sitewise, asset, property_info):
     }
 
 def get_historical_value(sitewise, asset, property_info, query_parameters):
-    """Get historical values of a property."""
+    """Get historical values of a property with pagination handling."""
     start_time = parse_time(query_parameters.get('start_time', '-1h'))
     end_time = parse_time(query_parameters.get('end_time', 'now'))
 
-    response = sitewise.get_asset_property_value_history(
-        assetId=asset['assetId'],
-        propertyId=property_info['id'],
-        startDate=int(start_time.timestamp()),
-        endDate=int(end_time.timestamp())
-    )
-
     values = []
-    for v in response.get('assetPropertyValueHistory', []):
-        if property_info['dataType'] in ['INTEGER', 'DOUBLE']:
-            value = next(iter(v['value'].values()))
-        elif property_info['dataType'] == 'BOOLEAN':
-            value = bool(next(iter(v['value'].values())))
-        elif property_info['dataType'] == 'STRING':
-            value = next(iter(v['value'].values()))
-        else:
-            value = str(next(iter(v['value'].values())))
+    next_token = None  # Initialize pagination token
 
-        values.append({
-            "value": value,
-            "timestamp": format_timestamp(v['timestamp']['timeInSeconds']),
-            "quality": v['quality']
-        })
+    while True:
+        params = {
+            'assetId': asset['assetId'],
+            'propertyId': property_info['id'],
+            'startDate': int(start_time.timestamp()),
+            'endDate': int(end_time.timestamp()),
+        }
+        if next_token:
+            params['nextToken'] = next_token  # Include pagination token if available
+
+        response = sitewise.get_asset_property_value_history(**params)
+
+        for v in response.get('assetPropertyValueHistory', []):
+            if property_info['dataType'] in ['INTEGER', 'DOUBLE']:
+                value = next(iter(v['value'].values()))
+            elif property_info['dataType'] == 'BOOLEAN':
+                value = bool(next(iter(v['value'].values())))
+            elif property_info['dataType'] == 'STRING':
+                value = next(iter(v['value'].values()))
+            else:
+                value = str(next(iter(v['value'].values())))
+
+            values.append({
+                "value": value,
+                "timestamp": format_timestamp(v['timestamp']['timeInSeconds']),
+                "quality": v['quality']
+            })
+
+        next_token = response.get('nextToken')  # Get the next page token
+        if not next_token:
+            break  # Exit loop if no more results
 
     return {
         "asset": asset['assetName'],
@@ -209,6 +220,7 @@ def get_historical_value(sitewise, asset, property_info, query_parameters):
         "endTime": end_time.isoformat(),
         "historicalData": values
     }
+
 
 def get_aggregated_value(sitewise, asset, property_info, query_parameters):
     """Get aggregated values of a property."""

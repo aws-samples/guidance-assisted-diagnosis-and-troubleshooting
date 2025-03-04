@@ -79,7 +79,7 @@
                         }
                     ]
                 },
-                "MapPublicIpOnLaunch": true
+                "MapPublicIpOnLaunch": false
             }
         },
         "PrivateSubnet": {
@@ -277,7 +277,9 @@
                             ]
                         ]
                     }
-                }
+                },
+                "EbsOptimized": true,
+                "Monitoring": true
             },
             "CreationPolicy": {
                 "ResourceSignal": {

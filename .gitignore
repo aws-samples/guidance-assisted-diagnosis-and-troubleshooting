@@ -12,3 +12,4 @@ cdk.out
 
 # macOS
 .DS_Store
+.gitlab-ci.yml

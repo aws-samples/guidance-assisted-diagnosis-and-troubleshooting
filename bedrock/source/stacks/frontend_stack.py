@@ -37,7 +37,8 @@ class FrontendStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
             public_read_access=False,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            enforce_ssl=True
         )
 
         CfnOutput(
